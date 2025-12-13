@@ -16,7 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Optional but very helpful for troubleshooting
       - name: Debug: show Dockerfile
         run: |
           ls -la
@@ -34,7 +33,6 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # This will be normalized to lowercase automatically
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest
@@ -47,6 +45,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
