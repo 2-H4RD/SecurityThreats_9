@@ -27,7 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     r-cran-ggplot2 \
     r-cran-readr \
     r-cran-dt \
+    r-cran-tidyr \
  && rm -rf /var/lib/apt/lists/*
+
 
 # Install your local R package
 # Diagnostics: confirm package sources are present in build context
@@ -38,7 +40,7 @@ RUN ls -la /app && \
     (test -d R && ls -la R || (echo "R/ directory missing" && exit 1))
 
 # Install local package with verbose output (so CI logs show the real error)
-RUN R CMD INSTALL . --preclean --no-multiarch --no-byte-compile --verbose
+RUN R CMD INSTALL . --preclean --no-multiarch --no-byte-compile
 
 
 RUN mkdir -p /srv
