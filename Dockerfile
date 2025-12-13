@@ -1,4 +1,4 @@
-FROM rocker/r2u:4.4.2
+FROM rocker/r2u:jammy
 
 ARG QUARTO_VERSION=1.5.57
 
