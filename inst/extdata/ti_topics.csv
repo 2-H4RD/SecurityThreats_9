@@ -1,0 +1,12 @@
+topic,pattern
+malware,"malware|ransomware|trojan|botnet|worm|spyware|keylogger|rootkit|virus"
+phishing,"phish|spear\s*phish|smish|vish|email\s*fraud|bec|business\s*email"
+vulnerability,"vulnerab|cve|exploit|zero\s*day|0\s*day|patch"
+web_security,"xss|csrf|sql\s*inject|command\s*inject|ssrf|xxe|clickjacking"
+auth_access,"authenticat|authoriz|mfa|2fa|password|credential|oauth|sso|access\s*control"
+network_security,"ids|ips|ddos|bgp|routing|firewall|deep\s*packet|dpi"
+threat_intel,"threat\s*intel|cti|ioc|ttp|mitre\s*att\&?ck|attack\s*graph"
+incident_response,"incident\s*response|forensic|forensics|triage|containment|eradication|recovery"
+privacy,"privacy|anonym|deanonym|differential\s*privacy|gdpr"
+ml_security,"adversarial|poisoning|model\s*steal|membership\s*infer|backdoor|robustness"
+crypto_security,"cryptograph|side\s*channel|timing\s*attack|key\s*exchange|tls|pkcs"

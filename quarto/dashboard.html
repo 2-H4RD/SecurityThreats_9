@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>arxivThreatIntel: Threat Intelligence Dashboard</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="dashboard_files/libs/clipboard/clipboard.min.js"></script>
+<script src="dashboard_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="dashboard_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="dashboard_files/libs/quarto-html/popper.min.js"></script>
+<script src="dashboard_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="dashboard_files/libs/quarto-html/anchor.min.js"></script>
+<link href="dashboard_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="dashboard_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="dashboard_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="dashboard_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="dashboard_files/libs/bootstrap/bootstrap-813c323200a87c37e262811031999de4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="dashboard_files/libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="dashboard_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<link href="dashboard_files/libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+
+<script src="dashboard_files/libs/datatables-binding-0.34.0/datatables.js"></script>
+
+<script src="dashboard_files/libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+
+<link href="dashboard_files/libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+
+<link href="dashboard_files/libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+
+<script src="dashboard_files/libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+
+<link href="dashboard_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="dashboard_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#общая-информация" id="toc-общая-информация" class="nav-link active" data-scroll-target="#общая-информация"><span class="header-section-number">1</span> Общая информация</a></li>
+  <li><a href="#частоты-тематик-rule-based" id="toc-частоты-тематик-rule-based" class="nav-link" data-scroll-target="#частоты-тематик-rule-based"><span class="header-section-number">2</span> Частоты тематик (rule-based)</a></li>
+  <li><a href="#динамика-публикаций-по-времени" id="toc-динамика-публикаций-по-времени" class="nav-link" data-scroll-target="#динамика-публикаций-по-времени"><span class="header-section-number">3</span> Динамика публикаций по времени</a></li>
+  <li><a href="#таблица-публикаций" id="toc-таблица-публикаций" class="nav-link" data-scroll-target="#таблица-публикаций"><span class="header-section-number">4</span> Таблица публикаций</a></li>
+  <li><a href="#методика" id="toc-методика" class="nav-link" data-scroll-target="#методика"><span class="header-section-number">5</span> Методика</a></li>
+  <li><a href="#как-использовать" id="toc-как-использовать" class="nav-link" data-scroll-target="#как-использовать"><span class="header-section-number">6</span> Как использовать</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">arxivThreatIntel: Threat Intelligence Dashboard</h1>
+<p class="subtitle lead">Аналитика научных публикаций arXiv по тематике ИБ</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="общая-информация" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="общая-информация"><span class="header-section-number">1</span> Общая информация</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 2
+  Показатель                              Значение                              
+  &lt;chr&gt;                                   &lt;chr&gt;                                 
+1 Всего загружено публикаций              300                                   
+2 Публикаций с тематическими совпадениями 249                                   
+3 Файл локального кэша (CSV)              C:/Users/H4RD/AppData/Roaming/R/data/…
+4 Файл метаданных обновления              C:/Users/H4RD/AppData/Roaming/R/data/…</code></pre>
+</div>
+</div>
+</section>
+<section id="частоты-тематик-rule-based" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="частоты-тематик-rule-based"><span class="header-section-number">2</span> Частоты тематик (rule-based)</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dashboard_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="динамика-публикаций-по-времени" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="динамика-публикаций-по-времени"><span class="header-section-number">3</span> Динамика публикаций по времени</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dashboard_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="таблица-публикаций" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="таблица-публикаций"><span class="header-section-number">4</span> Таблица публикаций</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ec085736af74513ce19b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ec085736af74513ce19b">{"x":{"filter":"none","vertical":false,"data":[["2025-12-10","2025-12-10","2025-12-10","2025-12-08","2025-12-08","2025-12-07","2025-12-04","2025-12-04","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-11-30","2025-11-30","2025-11-30","2025-11-28","2025-11-28","2025-11-28","2025-11-27","2025-11-27","2025-11-26","2025-11-26","2025-11-25","2025-11-25","2025-11-25","2025-11-25","2025-11-24","2025-11-24","2025-11-21","2025-11-19","2025-11-19","2025-11-19","2025-11-18","2025-11-17","2025-11-17","2025-11-16","2025-11-16","2025-11-16","2025-11-15","2025-11-15","2025-11-14","2025-11-14","2025-11-13","2025-11-13","2025-11-13","2025-11-12","2025-11-07","2025-11-06","2025-11-06","2025-11-06","2025-11-03","2025-11-03","2025-11-03","2025-11-02","2025-11-01","2025-11-01","2025-11-01","2025-10-31","2025-10-31","2025-10-29","2025-10-29","2025-10-27","2025-10-27","2025-10-27","2025-10-24","2025-10-24","2025-10-23","2025-10-23","2025-10-23","2025-10-23","2025-10-22","2025-10-22","2025-10-21","2025-10-21","2025-10-21","2025-10-21","2025-10-20","2025-10-19","2025-10-17","2025-10-17","2025-10-16","2025-10-16","2025-10-16","2025-10-15","2025-10-15","2025-10-15","2025-10-14","2025-10-13","2025-10-13","2025-10-12","2025-10-11","2025-10-10","2025-10-09","2025-10-08","2025-10-08","2025-10-07","2025-10-07","2025-10-05","2025-10-04","2025-10-02","2025-10-02","2025-09-30","2025-09-30","2025-09-29","2025-09-28","2025-09-28","2025-09-28","2025-09-28","2025-09-27","2025-09-26","2025-09-26","2025-09-26","2025-09-26","2025-09-26","2025-09-25","2025-09-25","2025-09-25","2025-09-25","2025-09-24","2025-09-24","2025-09-24","2025-09-24","2025-09-24","2025-09-23","2025-09-20","2025-09-19","2025-09-19","2025-09-19","2025-09-19","2025-09-18","2025-09-17","2025-09-17","2025-09-16","2025-09-16","2025-09-15","2025-09-15","2025-09-14","2025-09-13","2025-09-13","2025-09-12","2025-09-12","2025-09-12","2025-09-11","2025-09-11","2025-09-10","2025-09-10","2025-09-10","2025-09-09","2025-09-08","2025-09-08","2025-09-08","2025-09-06","2025-09-04","2025-09-04","2025-09-04","2025-09-04","2025-09-04","2025-09-03","2025-09-02","2025-09-02","2025-09-02","2025-09-01","2025-09-01","2025-09-01","2025-08-31","2025-08-31","2025-08-30","2025-08-29","2025-08-29","2025-08-29","2025-08-29","2025-08-28","2025-08-28","2025-08-27","2025-08-26","2025-08-26","2025-08-26","2025-08-26","2025-08-25","2025-08-22","2025-08-21","2025-08-20","2025-08-19","2025-08-18","2025-08-16","2025-08-16","2025-08-16","2025-08-14","2025-08-14","2025-08-13","2025-08-13","2025-08-12","2025-08-12","2025-08-10","2025-08-09","2025-08-09","2025-08-08","2025-08-08","2025-08-07","2025-08-06","2025-08-05","2025-08-05","2025-08-05","2025-08-05","2025-08-04","2025-08-04","2025-08-02","2025-08-01","2025-08-01","2025-08-01","2025-07-31","2025-07-30","2025-07-29","2025-07-29","2025-07-27","2025-07-26","2025-07-24","2025-07-23","2025-07-23","2025-07-23","2025-07-23","2025-07-22","2025-07-22","2025-07-22","2025-07-22","2025-07-22","2025-07-21","2025-07-21","2025-07-21","2025-07-21","2025-07-21","2025-07-21","2025-07-19","2025-07-18","2025-07-18","2025-07-17","2025-07-16","2025-07-15","2025-07-14","2025-07-13","2025-07-13","2025-07-12","2025-07-12","2025-07-11","2025-07-11","2025-07-11","2025-07-11","2025-07-10","2025-07-10","2025-07-09","2025-07-09","2025-07-09","2025-07-09","2025-07-09","2025-07-09","2025-07-07","2025-07-06","2025-07-06","2025-07-06","2025-07-05","2025-07-05","2025-07-05","2025-07-02","2025-07-02","2025-07-01","2025-06-30","2025-06-30","2025-06-30","2025-06-30","2025-06-30","2025-06-29","2025-06-28","2025-06-28","2025-06-27","2025-06-26","2025-06-26","2025-06-25","2025-06-25","2025-06-24","2025-06-24","2025-06-22","2025-06-20","2025-06-20","2025-06-19","2025-06-19","2025-06-18","2025-06-18","2025-06-17","2025-06-16","2025-06-16","2025-06-13","2025-06-13","2025-06-12","2025-06-12","2025-06-11","2025-06-11","2025-06-10","2025-06-10"],["2512.10104v1","2512.09883v1","2512.09539v1","2512.07827v1","2512.07909v1","2512.06925v1","2512.05321v1","2512.05288v1","2512.02243v1","2512.01893v1","2512.01891v1","2512.01666v1","2512.01577v1","2512.01391v1","2512.03462v1","2512.00857v1","2512.00741v1","2511.23198v2","2511.23183v1","2512.09934v1","2511.22189v1","2511.22095v1","2512.07866v1","2511.21448v1","2511.20801v1","2511.20290v1","2511.20229v1","2511.21764v1","2511.19654v1","2511.19649v1","2511.17761v1","2511.15434v1","2511.15165v2","2511.14989v2","2511.14963v1","2511.13808v1","2511.13333v1","2511.12827v1","2511.12743v1","2511.12648v1","2511.12085v1","2511.11979v1","2511.17573v1","2511.11366v1","2511.11759v1","2511.10554v1","2511.09957v1","2511.09606v2","2511.05119v1","2511.04728v1","2511.04472v2","2511.04440v1","2511.01583v1","2511.01180v1","2511.01144v1","2511.00894v1","2511.00361v1","2511.00342v1","2511.00336v1","2510.27298v1","2510.27140v2","2510.25470v1","2510.25806v1","2510.23847v2","2510.23462v1","2510.23313v2","2510.22085v1","2510.21459v1","2510.21004v2","2510.20975v1","2510.20768v1","2510.20367v1","2510.20858v1","2510.20852v1","2510.18585v1","2510.18465v1","2510.18438v2","2510.18324v1","2510.17175v1","2510.16835v1","2510.16251v1","2510.15567v1","2510.14670v1","2510.14638v1","2510.14344v1","2510.14113v1","2510.13925v1","2510.13136v1","2510.12310v1","2510.11974v1","2510.11915v1","2510.15971v1","2510.09984v1","2510.15953v1","2510.08859v1","2510.06607v2","2510.06535v2","2510.05900v1","2510.12811v1","2510.04118v1","2510.03623v1","2510.01676v1","2510.01552v1","2510.02391v1","2510.00240v2","2509.25410v1","2509.23970v1","2509.23621v1","2509.23573v2","2509.23571v2","2509.23449v1","2509.22762v1","2509.22280v1","2510.03254v1","2509.21821v1","2509.21772v1","2509.21129v1","2509.20972v1","2509.20943v1","2509.20639v2","2509.20592v1","2509.20589v1","2509.20166v2","2509.20411v2","2509.19650v1","2509.20399v2","2509.16671v1","2509.16340v1","2509.15756v1","2509.15555v1","2509.15499v1","2509.14519v1","2509.14335v1","2510.09618v1","2509.13186v1","2509.13035v1","2509.11836v1","2509.11615v1","2509.11187v1","2509.10858v2","2509.10838v1","2509.10709v1","2509.10224v1","2509.10206v1","2509.09592v1","2509.09222v1","2509.08493v1","2509.08424v1","2509.08375v1","2509.07457v1","2509.07287v1","2509.06921v1","2509.06548v2","2509.05608v1","2509.04091v2","2509.05370v1","2509.03860v1","2509.03807v1","2509.05362v3","2509.03442v2","2509.22663v1","2509.02113v1","2509.02077v2","2509.01791v2","2509.01731v1","2509.01463v1","2509.05331v1","2509.00770v1","2509.00476v1","2508.21457v2","2509.00124v1","2508.21323v2","2509.10482v1","2508.20643v1","2508.20444v1","2508.20212v2","2509.00081v1","2508.19381v1","2508.18839v2","2508.18684v1","2508.17856v1","2509.05306v1","2508.15987v2","2508.14385v1","2508.14261v1","2508.13118v2","2508.12175v1","2508.12107v1","2508.11928v1","2508.10677v1","2508.10652v1","2508.09801v2","2508.09652v1","2508.09765v1","2508.08656v1","2508.10038v1","2508.07094v2","2509.00005v1","2508.06734v1","2508.06643v1","2508.05188v1","2508.04178v1","2508.03882v1","2508.03879v1","2508.03588v1","2508.03342v1","2508.02438v1","2508.02035v1","2508.01422v1","2508.01059v1","2508.00478v1","2508.00293v3","2507.23611v1","2507.22772v1","2507.22231v1","2507.21538v1","2507.20361v1","2507.19976v1","2507.18313v1","2507.17978v2","2507.17691v1","2507.17655v2","2507.17628v1","2507.16996v1","2507.16952v2","2507.16576v1","2507.16291v1","2507.16241v1","2508.00874v1","2507.16040v1","2507.16852v1","2507.15419v1","2507.15393v1","2507.15163v3","2507.14658v1","2507.14324v1","2507.13629v1","2507.13313v1","2507.12185v1","2507.11310v1","2507.10854v1","2507.09762v1","2507.09564v1","2507.09411v2","2507.09133v1","2507.09074v1","2507.09022v1","2507.10591v1","2507.08597v2","2507.07916v1","2507.07406v1","2507.07258v1","2507.07246v1","2507.07244v1","2507.06850v5","2507.06723v1","2507.07143v1","2507.05213v2","2507.04426v1","2507.04372v1","2507.04275v1","2507.06252v1","2507.04055v2","2507.03993v1","2507.02057v1","2507.01768v1","2507.00348v1","2507.00189v1","2506.23909v1","2506.23814v1","2506.23634v1","2507.02959v1","2506.23314v1","2506.22750v1","2506.22706v1","2506.22323v1","2506.21106v1","2506.22515v1","2506.20228v1","2506.20170v1","2506.19899v3","2506.19480v1","2506.17988v1","2506.17162v2","2506.16968v1","2506.16626v1","2506.16224v2","2506.15656v1","2506.17309v1","2506.14337v1","2506.13746v1","2506.13434v1","2506.12113v4","2506.11612v1","2506.11325v2","2506.10645v1","2506.10175v1","2506.09662v1","2506.12088v2","2506.08922v1"],["cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","quant-ph","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.AI","cs.CR","cs.CR","cs.CL","cs.CL","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CL","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.AI","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CL","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.SE","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","eess.SY","cs.MA","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.LG","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR","cs.CR"],["phishing","malware","malware","phishing","malware; phishing","phishing","malware","malware","phishing","phishing","phishing","malware","phishing","malware; phishing","malware; phishing","","malware","malware","phishing","","malware; phishing","malware","malware","phishing","malware; phishing","","malware","malware","malware","malware","malware; incident_response","phishing","phishing","malware","malware","malware; phishing","malware","malware","","","malware; phishing","malware","malware","","phishing","","malware","phishing","malware; incident_response","phishing","malware","malware","malware","malware","","malware","malware","malware","malware","phishing","malware","malware; phishing","malware","malware","","malware; phishing","malware","","","malware","","malware","","malware","phishing","malware; phishing","phishing","malware","phishing","malware; phishing","malware","malware","","malware; incident_response","malware; phishing","","","malware","malware; phishing","","phishing","malware; phishing","malware","","malware","malware; phishing","malware","phishing","malware","malware","malware; phishing","malware; phishing","","malware","incident_response","phishing","malware; incident_response","malware; phishing","","","malware","malware","","malware; phishing","malware","phishing","phishing","phishing","","malware","phishing","phishing","malware","malware","malware","malware","malware","malware; phishing","malware","malware","malware","malware; phishing","malware","malware","phishing","malware","malware","phishing","malware","incident_response","malware","malware","malware","","phishing","malware","phishing","phishing","phishing","phishing","phishing","malware","malware","","malware","malware","phishing","malware","phishing","malware","phishing","malware","","phishing","","","malware; phishing; incident_response","","malware","phishing","malware; phishing","incident_response","","incident_response","malware","malware","","malware","malware","","malware","","malware","phishing","malware","","phishing","phishing","phishing","","malware","malware","malware","phishing","malware","malware","malware; phishing","phishing","malware","malware; phishing","incident_response","malware","","malware; incident_response","malware","","phishing","phishing","malware; phishing","phishing","","malware","malware","malware","malware","phishing","malware","malware","malware","phishing","malware","phishing","","malware; phishing","malware","","phishing","","malware; phishing","malware","","malware; phishing","phishing","","","phishing","","malware","phishing","","phishing","malware","phishing","malware","phishing","malware; phishing","phishing","malware","malware","phishing","phishing","malware; phishing","malware","","malware","malware","malware; incident_response","malware","phishing","malware","malware","phishing","malware","malware; incident_response","malware","","malware","phishing","malware","malware","malware","malware","malware","malware","malware; phishing","malware; phishing","phishing","phishing","phishing","malware","phishing","malware; phishing","malware; phishing","malware; phishing","","phishing","malware","phishing","malware","phishing","phishing","phishing","malware","malware","","","malware","malware","malware","malware"],["LLM-PEA: Leveraging Large Language Models Against Phishing Email Attacks","ByteShield: Adversarially Robust End-to-End Malware Detection through Byte Masking","Comparative Analysis of Hash-based Malware Clustering via K-Means","An Adaptive Multi-Layered Honeynet Architecture for Threat Behavior Analysis via Deep Learning","Agentic Artificial Intelligence for Ethical Cybersecurity in Uganda: A Reinforcement Learning Framework for Threat Detection in Resource-Constraine...","Deep Reinforcement Learning for Phishing Detection with Transformer-Based Semantic Features","A Practical Honeypot-Based Threat Intelligence Framework for Cyber Defence in the Cloud","Beyond Detection: A Comprehensive Benchmark and Study on Representation Learning for Fine-Grained Webshell Family Classification","PhishSnap: Image-Based Phishing Detection Using Perceptual Hashing","Improving Phishing Resilience with AI-Generated Training: Evidence on Prompting, Personalization, and Duration","Behind the Curtain: How Shared Hosting Providers Respond to Vulnerability Notifications","Demystifying Feature Engineering in Malware Analysis of API Call Sequences","Beyond the Hype: A Large-Scale Empirical Analysis of On-Chain Transactions in NFT Scams","INFERMAL: Inferential analysis of maliciously registered domains","A Hybrid Deep Learning and Anomaly Detection Framework for Real-Time Malicious URL Classification","Hesperus is Phosphorus: Mapping Threat Actor Naming Taxonomies at Scale","MASCOT: Analyzing Malware Evolution Through A Well-Curated Source Code Dataset","Clustering Malware at Scale: A First Full-Benchmark Study","Identification of Malicious Posts on the Dark Web Using Supervised Machine Learning","IoTEdu: Access Control, Detection, and Automatic Incident Response in Academic IoT Networks","Department-Specific Security Awareness Campaigns: A Cross-Organizational Study of HR and Accounting","Binary-30K: A Heterogeneous Dataset for Deep Learning in Binary Analysis and Malware Detection","Command &amp; Control (C2) Traffic Detection Via Algorithm Generated Domain (Dga) Classification Using Deep Learning And Natural Language Processing","Constructing and Benchmarking: a Labeled Email Dataset for Text-Based Phishing and Spam Detection Framework","A Research and Development Portfolio of GNN Centric Malware Detection, Explainability, and Dataset Curation","APT-CGLP: Advanced Persistent Threat Hunting via Contrastive Graph-Language Pre-Training","Improving the Identification of Real-world Malware's DNS Covert Channels Using Locality Sensitive Hashing","Adaptive Detection of Polymorphic Malware: Leveraging Mutation Engines and YARA Rules for Enhanced Security","Accuracy and Efficiency Trade-Offs in LLM-Based Malware Detection and Explanation: A Comparative Study of Parameter Tuning vs. Full Fine-Tuning","Synthetic Data: AI's New Weapon Against Android Malware","StealthCup: Realistic, Multi-Stage, Evasion-Focused CTF for Benchmarking IDS","Small Language Models for Phishing Website Detection: Cost, Performance, and Privacy Trade-Offs","Can MLLMs Detect Phishing? A Comprehensive Security Benchmark Suite Focusing on Dynamic Threats and Multimodal Evaluation in Academic Environments","Critical Evaluation of Quantum Machine Learning for Adversarial Robustness","LFreeDA: Label-Free Drift Adaptation for Windows Malware Detection","Zipf-Gramming: Scaling Byte N-Grams Up to Production Sized Malware Corpora","AutoMalDesc: Large-Scale Script Analysis for Cyber Threat Research","Efficient Adversarial Malware Defense via Trust-Based Raw Override and Confidence-Adaptive Bit-Depth Reduction","An Evaluation Framework for Network IDS/IPS Datasets: Leveraging MITRE ATT&amp;CK and Industry Relevance Metrics","Scalable Hierarchical AI-Blockchain Framework for Real-Time Anomaly Detection in Large-Scale Autonomous Vehicle Networks","Explainable Transformer-Based Email Phishing Classification with Adversarial Robustness","CITADEL: A Semi-Supervised Active Learning Framework for Malware Detection Under Continuous Distribution Drift","Binary BPE: A Family of Cross-Platform Tokenizers for Binary Analysis","Grid-STIX: A STIX 2.1-Compliant Cyber-Physical Security Ontology for Power Grid","Can AI Models be Jailbroken to Phish Elderly Victims? An End-to-End Evaluation","GraphFaaS: Serverless GNN Inference for Burst-Resilient, Real-Time Intrusion Detection","Pack-A-Mal: A Malware Analysis Framework for Open-Source Packages","How Can We Effectively Use LLMs for Phishing Detection?: Evaluating the Effectiveness of Large Language Model-based Phishing Detection Models","Cybersecurity AI in OT: Insights from an AI Top-10 Ranker in the Dragos OT CTF 2025","Trustworthiness Calibration Framework for Phishing Email Detection Using Large Language Models","Exploiting Data Structures for Bypassing and Crashing Anti-Malware Solutions via Telemetry Complexity Attacks","Adversarially Robust and Interpretable Magecart Malware Detection","Federated Cyber Defense: Privacy-Preserving Ransomware Detection Across Distributed Systems","A Large Scale Study of AI-based Binary Function Similarity Detection Techniques for Security Researchers and Practitioners","AthenaBench: A Dynamic Benchmark for Evaluating LLMs in Cyber Threat Intelligence","Android Malware Detection: A Machine Leaning Approach","MalDataGen: A Modular Framework for Synthetic Tabular Data Generation in Malware Detection","MH-1M: A 1.34 Million-Sample Comprehensive Multi-Feature Android Malware Dataset for Machine Learning, Deep Learning, Large Language Models, and Th...","Split Learning-Enabled Framework for Secure and Light-weight Internet of Medical Things Systems","Sustaining Cyber Awareness: The Long-Term Impact of Continuous Phishing Training and Emotional Triggers","Measuring the Security of Mobile LLM Agents under Adversarial Prompts from Untrusted Third-Party Channels","An In-Depth Analysis of Cyber Attacks in Secured Platforms","APThreatHunter: An automated planning-based threat hunting framework","EthVault: A Secure and Resource-Conscious FPGA-Based Ethereum Cold Wallet","SQOUT: A Risk-Based Threat Analysis Framework for Quantum Communication Systems","Network Intrusion Detection: Evolution from Conventional Approaches to LLM Collaboration and Emerging Risks","Jailbreak Mimicry: Automated Discovery of Narrative-Based Jailbreaks for Large Language Models","SBASH: a Framework for Designing and Evaluating RAG vs. Prompt-Tuned LLM Honeypots","Can Current Detectors Catch Face-to-Voice Deepfake Attacks?","REx86: A Local Large Language Model for Assisting in x86 Assembly Reverse Engineering","RAGRank: Using PageRank to Counter Poisoning in CTI LLM Pipelines","NeuPerm: Disrupting Malware Hidden in Neural Network Parameters by Leveraging Permutation Symmetry","Everyone Needs AIR: An Agnostic Incident Reporting Framework for Cybersecurity in Operational Technology","FedMicro-IDA: A Federated Learning and Microservices-based Framework for IoT Data Analytics","CLASP: Cost-Optimized LLM-based Agentic System for Phishing Detection","PP3D: An In-Browser Vision-Based Defense Against Web Behavior Manipulation Attacks","DeepTx: Real-Time Transaction Risk Analysis via Multi-Modal Features and LLM Reasoning","CryptoGuard: Lightweight Hybrid Detection and Response to Host-based Cryptojackers in Linux Cloud Environments","QRïS: A Preemptive Novel Method for Quishing Detection Through Structural Features of QR","ThreatIntel-Andro: Expert-Verified Benchmarking for Robust Android Malware Research","LibIHT: A Hardware-Based Approach to Efficient and Evasion-Resistant Dynamic Binary Analysis","MalCVE: Malware Detection and CVE Association Using Large Language Models","TITAN: Graph-Executable Reasoning for Cyber Threat Intelligence","Improving Cybercrime Detection and Digital Forensics Investigations with Artificial Intelligence","BinCtx: Multi-Modal Representation Learning for Robust Android App Behavior Detection","Toward Cybersecurity-Expert Small Language Models","An LLM-Powered AI Agent Framework for Holistic IoT Traffic Interpretation","Privacy-Aware Framework of Robust Malware Detection in Indoor Robots: Hybrid Quantum Computing and Deep Neural Networks","DeepTrust: Multi-Step Classification through Dissimilar Adversarial Representations for Robust Android Malware Detection","CTIArena: Benchmarking LLM Knowledge and Reasoning Across Heterogeneous Cyber Threat Intelligence","Robust ML-based Detection of Conventional, LLM-Generated, and Adversarial Phishing Emails Using Advanced Text Preprocessing","A Graph-Attentive LSTM Model for Malicious URL Detection","Learning Joint Embeddings of Function and Process Call Graphs for Malware Detection","Hierarchical Multi-Modal Threat Intelligence Fusion Without Aligned Data: A Practical Framework for Real-World Security Operations","Pattern Enhanced Multi-Turn Jailbreaking: Exploiting Structural Vulnerabilities in Large Language Models","Code Agent can be an End-to-end System Hacker: Benchmarking Real-world Threats of Computer-use Agent","SpyChain: Multi-Vector Supply Chain Attacks on Small Satellite Systems","PhishSSL: Self-Supervised Contrastive Learning for Phishing Website Detection","Applying Graph Analysis for Unsupervised Fast Malware Fingerprinting","Cyber Warfare During Operation Sindoor: Malware Campaign Analysis and Detection Framework","Explainable but Vulnerable: Adversarial Attacks on XAI Explanation in Cybersecurity Applications","Evaluating the Robustness of a Production Malware Detection System to Transferable Adversarial Attacks","POLAR: Automating Cyber Threat Prioritization through LLM-Powered Assessment","LLM-Generated Samples for Android Malware Detection","SecureBERT 2.0: Advanced Language Model for Cybersecurity Intelligence","Characterizing Event-themed Malicious Web Campaigns: A Case Study on War-themed Websites","Binary Diff Summarization using Large Language Models","AutoML in Cybersecurity: An Empirical Study","Uncovering Vulnerabilities of LLM-Assisted Cyber Threat Intelligence","Benchmarking LLM-Assisted Blue Teaming via Standardized Threat Hunting","Beyond Embeddings: Interpretable Feature Extraction for Binary Code Similarity","TRUSTCHECKPOINTS: Time Betrays Malware for Unconditional Software Root of Trust","A Global Analysis of Cyber Threats to the Energy Sector: \"Currents of Conflict\" from a Geopolitical Perspective","Adversarial training with restricted data manipulation","SoK: Potentials and Challenges of Large Language Models for Reverse Engineering","PhishLumos: An Adaptive Multi-Agent System for Proactive Phishing Campaign Mitigation","EvoMail: Self-Evolving Cognitive Agents for Adaptive Spam and Phishing Email Defense","Dual-Path Phishing Detection: Integrating Transformer-Based NLP with Structural URL Analysis","CTI Dataset Construction from Telegram","A Framework for Rapidly Developing and Deploying Protection Against Large Language Model Attacks","Beyond SSO: Mobile Money Authentication for Inclusive e-Government in Sub-Saharan Africa","Every Character Counts: From Vulnerability to Defense in Phishing Detection","CyberSOCEval: Benchmarking LLMs Capabilities for Malware Analysis and Threat Intelligence Reasoning","Adversarial Defense in Cybersecurity: A Systematic Review of GANs for Threat Detection and Mitigation","SoK: A Systematic Review of Malware Ontologies and Taxonomies and Implications for the Quantum Era","Defending against Stegomalware in Deep Neural Networks with Permutation Symmetry","\"Digital Camouflage\": The LLVM Challenge in LLM-Based Malware Detection","To Unpack or Not to Unpack: Living with Packers to Enable Dynamic Analysis of Android Apps","An Adversarial Robust Behavior Sequence Anomaly Detection Approach Based on Critical Behavior Unit Learning","Hybrid Deep Learning-Federated Learning Powered Intrusion Detection System for IoT/5G Advanced Edge Computing Network","Adversarially Robust Assembly Language Model for Packed Executables Detection","BEACON: Behavioral Malware Classification with Large Language Model Embeddings and Deep Learning","Beyond Classification: Evaluating LLMs for Fine-Grained Automatic Malware Behavior Auditing","A Systematic Review on Crimes facilitated by Consumer Internet of Things Devices","Characterizing Phishing Pages by JavaScript Capabilities","Bridging Threat Models and Detections: Formal Verification via CADP","A Practical Adversarial Attack against Sequence-based Deep Learning Malware Classifiers","Cyber Threat Hunting: Non-Parametric Mining of Attack Patterns from Cyber Threat Intelligence for Precise Threats Attribution","DMLDroid: Deep Multimodal Fusion Framework for Android Malware Detection with Resilience to Code Obfuscation and Adversarial Perturbations","Large Language Models for Security Operations Centers: A Comprehensive Survey","A Comparison of Selected Image Transformation Techniques for Malware Classification","Feature-Centric Approaches to Android Malware Analysis: A Survey","Empirical Evaluation of Memory-Erasure Protocols","Investigating Feature Attribution for 5G Network Intrusion Detection","Bridging the Gap in Phishing Detection: A Comprehensive Phishing Dataset Collector","A Cyber-Twin Based Honeypot for Gathering Threat Intelligence","Send to which account? Evaluation of an LLM-based Scambaiting System","Phishing Webpage Detection: Unveiling the Threat Landscape and Investigating Detection Techniques","Phish-Blitz: Advancing Phishing Detection with Comprehensive Webpage Resource Collection and Visual Integrity Preservation","A Decade-long Landscape of Advanced Persistent Threats: Longitudinal Analysis and Global Trends","Paladin: Defending LLM-enabled Phishing Emails with a New Trigger-Tag Paradigm","Neuro-Symbolic AI for Cybersecurity: State of the Art, Challenges, and Opportunities","Signal-Based Malware Classification Using 1D CNNs","Cross-Service Threat Intelligence in LLM Services using Privacy-Preserving Fingerprints","Revisiting Third-Party Library Detection: A Ground Truth Dataset and Its Implications Across Security Tasks","Quantum AI Algorithm Development for Enhanced Cybersecurity: A Hybrid Approach to Malware Detection","KGBERT4Eth: A Feature-Complete Transformer Powered by Knowledge Graph for Multi-Task Ethereum Fraud Detection","BIDO: A Unified Approach to Address Obfuscation and Concept Drift Challenges in Image-based Malware Detection","AI-in-the-Loop: Privacy Preserving Real-Time Scam Detection and Conversational Scambaiting by Leveraging LLMs and Federated Learning","Feature-Oriented IoT Malware Analysis: Extraction, Classification, and Future Directions","Security Friction Quotient for Zero Trust Identity Policy with Empirical Validation","HiGraph: A Large-Scale Hierarchical Graph Dataset for Malware Analysis","From Attack Descriptions to Vulnerabilities: A Sentence Transformer-Based Approach","E-PhishGen: Unlocking Novel Research in Phishing Email Detection","Are Enterprises Ready for Quantum-Safe Cybersecurity?","LLMHoney: A Real-Time SSH Honeypot with Large Language Model-Driven Dynamic Response Generation","ForensicsData: A Digital Forensics Dataset for Large Language Models","Bayesian and Multi-Objective Decision Support for Real-Time Cyber-Physical Incident Mitigation","Cross-Domain Malware Detection via Probability-Level Fusion of Lightweight Gradient Boosting Models","SoK: Exposing the Generation and Detection Gaps in LLM-Generated Phishing Through Examination of Generation Methods, Content Characteristics, and C...","A Whole New World: Creating a Parallel-Poisoned Web Only AI-Agents Can See","LLM-driven Provenance Forensics for Threat Investigation and Detection","AegisShield: Democratizing Cyber Threat Modeling with Generative AI","CyberSleuth: Autonomous Blue-Team LLM Agent for Web Attack Forensics","Ransomware 3.0: Self-Composing and LLM-Orchestrated","FlowMalTrans: Unsupervised Binary Code Translation for Malware Detection Using Flow-Adapter Architecture","Enabling Transparent Cyber Threat Intelligence Combining Large Language Models and Domain Ontologies","Towards Quantum Machine Learning for Malicious Code Analysis","DRMD: Deep Reinforcement Learning for Malware Detection under Concept Drift","FALCON: Autonomous Cyber Threat Intelligence Mining with LLMs for IDS Rule Generation","MalLoc: Toward Fine-grained Android Malicious Payload Localization via LLMs","Towards Log Analysis with AI Agents: Cowrie Case Study","PickleBall: Secure Deserialization of Pickle-based Machine Learning Models (Extended Report)","Online Incident Response Planning under Model Misspecification through Bayesian Learning and Belief Quantization","SaMOSA: Sandbox for Malware Orchestration and Side-Channel Analysis","AutoBnB-RAG: Enhancing Multi-Agent Incident Response with Retrieval-Augmented Generation","Invitation Is All You Need! Promptware Attacks Against LLM-Powered Assistants in Production Are Practical and Dangerous","Ethereum Crypto Wallets under Address Poisoning: How Usable and Secure Are They?","The Passwordless Authentication with Passkey Technology from an Implementation Perspective","Advancing Autonomous Incident Response: Leveraging LLMs and Cyber Threat Intelligence","A Novel Study on Intelligent Methods and Explainable AI for Dynamic Malware Analysis","Explainable Attention-Guided Stacked Graph Neural Networks for Malware Detection","Demystifying the Role of Rule-based Detection in AI Systems for Windows Malware Detection","Enhance the machine learning algorithm performance in phishing detection with keyword features","Evasive Ransomware Attacks Using Low-level Behavioral Adversarial Examples","Certifiably robust malware detectors by design","ScamDetect: Towards a Robust, Agnostic Framework to Uncover Threats in Smart Contracts","Per-sender neural network classifiers for email authorship validation","Mitigating Distribution Shift in Graph-Based Android Malware Classification via Function Metadata and LLM Embeddings","Symbolic Execution in Practice: A Survey of Applications in Vulnerability, Malware, Firmware, and Protocol Analysis","Incident Response Planning Using a Lightweight Large Language Model with Reduced Hallucination","Secure Development of a Hooking-Based Deception Framework Against Keylogging Techniques","Simulating Cyberattacks through a Breach Attack Simulation (BAS) Platform empowered by Security Chaos Engineering (SCE)","RX-INT: A Kernel Engine for Real-Time Detection and Analysis of In-Memory Threats","MalFlows: Context-aware Fusion of Heterogeneous Flow Semantics for Android Malware Detection","From Legacy to Standard: LLM-Assisted Transformation of Cybersecurity Playbooks into CACAO Format","SoftPUF: a Software-Based Blockchain Framework using PUF and Machine Learning","PhishParrot: LLM-Driven Adaptive Crawling to Unveil Cloaked Phishing Sites","AI-Driven Cybersecurity Threat Detection: Building Resilient Defense Systems Using Predictive Analytics","Llama-3.1-FoundationAI-SecurityLLM-8B-Instruct Technical Report","CyGATE: Game-Theoretic Cyber Attack-Defense Engine for Patch Strategy Optimization","ranDecepter: Real-time Identification and Deterrence of Ransomware Attacks","LLM-Based Identification of Infostealer Infection Vectors from Screenshots: The Case of Aurora","Empirical Evaluation of Concept Drift in ML-Based Android Malware Detection","Understanding Concept Drift with Deprecated Permissions in Android Malware Detection","Can We End the Cat-and-Mouse Game? Simulating Self-Evolving Phishing Attacks with LLMs and Genetic Algorithms","Measuring and Explaining the Effects of Android App Transformations in Online Malware Detection","\"Blockchain-Enabled Zero Trust Framework for Securing FinTech Ecosystems Against Insider Threats and Cyber Attacks\"","Regression-aware Continual Learning for Android Malware Detection","MeAJOR Corpus: A Multi-Source Dataset for Phishing Email Detection","CASCADE: LLM-Powered JavaScript Deobfuscator at Google","HSM and TPM Failures in Cloud: A Real-World Taxonomy and Emerging Defenses","Quantifying the ROI of Cyber Threat Intelligence: A Data-Driven Approach","From Cracks to Crooks: YouTube as a Vector for Malware Distribution","Evaluating Ensemble and Deep Learning Models for Static Malware Detection with Dimensionality Reduction Using the EMBER Dataset","From Text to Actionable Intelligence: Automating STIX Entity and Relationship Extraction","Talking Like a Phisher: LLM-Based Attacks on Voice Phishing Classifiers","eX-NIDS: A Framework for Explainable Network Intrusion Detection Leveraging Large Language Models","Implementasi dan Pengujian Polimorfisme pada Malware Menggunakan Dasar Payload Metasploit Framework","Blocklisted Oblivious Pseudorandom Functions","SynthCTI: LLM-Driven Synthetic CTI Generation to enhance MITRE Technique Mapping","PhishIntentionLLM: Uncovering Phishing Website Intentions through Multi-Agent Retrieval-Augmented Generation","PiMRef: Detecting and Explaining Ever-evolving Spear Phishing Emails with Knowledge Base Invariants","Adaptive Network Security Policies via Belief Aggregation and Rollout","Learning to Communicate in Multi-Agent Reinforcement Learning for Autonomous Cyber Defence","Quantum-Safe Identity Verification using Relativistic Zero-Knowledge Proof Systems","Large Language Models in Cybersecurity: Applications, Vulnerabilities, and Defense Techniques","A Crowdsensing Intrusion Detection Dataset For Decentralized Federated Learning Models","Exploiting Jailbreaking Vulnerabilities in Generative AI to Bypass Ethical Safeguards for Facilitating Phishing Attacks","LRCTI: A Large Language Model-Based Framework for Multi-Step Evidence Retrieval and Reasoning in Cyber Threat Intelligence Credibility Verification","PhreshPhish: A Real-World, High-Quality, Large-Scale Phishing Website Dataset and Benchmark","EventHunter: Dynamic Clustering and Ranking of Security Events from Hacker Forum Discussions","A Login Page Transparency and Visual Similarity Based Zero Day Phishing Defense Protocol","LLMalMorph: On The Feasibility of Generating Variant Malware using Large-Language-Models","CLIProv: A Contrastive Log-to-Intelligence Multimodal Approach for Threat Detection and Provenance Analysis","Favicon Trojans: Executable Steganography Via Ico Alpha Channel Exploitation","SSH-Passkeys: Leveraging Web Authentication for Passwordless SSH","MH-FSF: A Unified Framework for Overcoming Benchmarking and Reproducibility Limitations in Feature Selection Evaluation","ADAPT: A Pseudo-labeling Approach to Combat Concept Drift in Malware Detection","Can Large Language Models Improve Phishing Defense? A Large-Scale Controlled Experiment on Warning Dialogue Explanations","Phishing Detection in the Gen-AI Era: Quantized LLMs vs Classical Models","FedP3E: Privacy-Preserving Prototype Exchange for Non-IID IoT Malware Detection in Cross-Silo Federated Learning","Disa: Accurate Learning-based Static Disassembly with Attentions","Automated Attack Testflow Extraction from Cyber Threat Report using BERT for Contextual Analysis","The Dark Side of LLMs: Agent-based Attacks for Complete Computer Takeover","PotentRegion4MalDetect: Advanced Features from Potential Malicious Regions for Malware Detection","Understanding Malware Propagation Dynamics through Scientific Machine Learning","Hunting in the Dark: Metrics for Early Stage Traffic Discovery","Enhancing Phishing Detection in Financial Systems through NLP","Adaptive Malware Detection using Sequential Feature Selection: A Dueling Double Deep Q-Network (D3QN) Framework for Intelligent Classification","VOLTRON: Detecting Unknown Malware Using Graph-Based Zero-Shot Learning","False Alarms, Real Damage: Adversarial Attacks Using LLM-based Models on Text-based Cyber Threat Intelligence Systems","Rethinking and Exploring String-Based Malware Family Classification in the Era of LLMs and RAG","MalVol-25: A Diverse, Labelled and Detailed Volatile Memory Dataset for Malware Detection and Response Testing and Validation","MGC: A Compiler Framework Exploiting Compositional Blindness in Aligned LLMs for Malware Generation","Signals and Symptoms: ICS Attack Dataset From Railway Cyber Range","Addressing malware family concept drift with triplet autoencoder","Plug. Play. Persist. Inside a Ready-to-Go Havoc C2 Infrastructure","RawMal-TF: Raw Malware Dataset Labeled by Type and Family","Breaking Out from the TESSERACT: Reassessing ML-based Malware Detection under Spatio-Temporal Drift","gMBA: Expression Semantic Guided Mixed Boolean-Arithmetic Deobfuscation Using Transformer Architectures","A Novel Active Learning Approach to Label One Million Unknown Malware Variants","Interpretable by Design: MH-AutoML for Transparent and Efficient Android Malware Detection without Compromising Performance","Enhancing Android Malware Detection with Retrieval-Augmented Generation","General Autonomous Cybersecurity Defense: Learning Robust Policies for Dynamic Topologies and Diverse Attackers","Under the Hood of BlotchyQuasar: DLL-Based RAT Campaigns Against Latin America","PhishKey: A Novel Centroid-Based Approach for Enhanced Phishing Detection Using Adaptive HTML Component Extraction","In-context learning for the classification of manipulation techniques in phishing emails","Measuring Modern Phishing Tactics: A Quantitative Study of Body Obfuscation Prevalence, Co-occurrence, and Filter Impact","JsDeObsBench: Measuring and Benchmarking LLMs for JavaScript Deobfuscation","Anti-Phishing Training (Still) Does Not Work: A Large-Scale Reproduction of Phishing Training Inefficacy Grounded in the NIST Phish Scale","PhishingHook: Catching Phishing Ethereum Smart Contracts leveraging EVM Opcodes","Secure User-friendly Blockchain Modular Wallet Design Using Android &amp; OP-TEE","Analyzing PDFs like Binaries: Adversarially Robust PDF Malware Analysis via Intermediate Representation and Language Model","MM-AttacKG: A Multimodal Approach to Attack Graph Construction with Large Language Models","Few-Shot Learning-Based Cyber Incident Detection with Augmented Context Intelligence","Malware Classification Leveraging NLP &amp; Machine Learning for Enhanced Accuracy","PhishDebate: An LLM-Based Multi-Agent Framework for Phishing Website Detection","Efficient Malware Detection with Optimized Learning on High-Dimensional Features","LLM-Powered Intent-Based Categorization of Phishing Emails","Evaluating Large Language Models for Phishing Detection, Self-Consistency, Faithfulness, and Explainability","From Promise to Peril: Rethinking Cybersecurity Red and Blue Teaming in the Age of LLMs","Semantic Preprocessing for LLM-based Malware Analysis","KEENHash: Hashing Programs into Function-Aware Embeddings for Large-Scale Binary Code Similarity Analysis","Revealing the True Indicators: Understanding and Improving IoC Extraction From Threat Reports","From IOCs to Group Profiles: On the Specificity of Threat Group Behaviors in CTI Knowledge Bases","AURA: A Multi-Agent Intelligence Framework for Knowledge-Enhanced Cyber Threat Attribution","Empirical Quantification of Spurious Correlations in Malware Detection","Risks &amp; Benefits of LLMs &amp; GenAI for Platform Integrity, Healthcare Diagnostics, Financial Trust and Compliance, Cybersecurity, Privacy &amp; AI Safety...","Striking Back At Cobalt: Using Network Traffic Metadata To Detect Cobalt Strike Masquerading Command and Control Channels"],["https://arxiv.org/abs/2512.10104v1","https://arxiv.org/abs/2512.09883v1","https://arxiv.org/abs/2512.09539v1","https://arxiv.org/abs/2512.07827v1","https://arxiv.org/abs/2512.07909v1","https://arxiv.org/abs/2512.06925v1","https://arxiv.org/abs/2512.05321v1","https://arxiv.org/abs/2512.05288v1","https://arxiv.org/abs/2512.02243v1","https://arxiv.org/abs/2512.01893v1","https://arxiv.org/abs/2512.01891v1","https://arxiv.org/abs/2512.01666v1","https://arxiv.org/abs/2512.01577v1","https://arxiv.org/abs/2512.01391v1","https://arxiv.org/abs/2512.03462v1","https://arxiv.org/abs/2512.00857v1","https://arxiv.org/abs/2512.00741v1","https://arxiv.org/abs/2511.23198v2","https://arxiv.org/abs/2511.23183v1","https://arxiv.org/abs/2512.09934v1","https://arxiv.org/abs/2511.22189v1","https://arxiv.org/abs/2511.22095v1","https://arxiv.org/abs/2512.07866v1","https://arxiv.org/abs/2511.21448v1","https://arxiv.org/abs/2511.20801v1","https://arxiv.org/abs/2511.20290v1","https://arxiv.org/abs/2511.20229v1","https://arxiv.org/abs/2511.21764v1","https://arxiv.org/abs/2511.19654v1","https://arxiv.org/abs/2511.19649v1","https://arxiv.org/abs/2511.17761v1","https://arxiv.org/abs/2511.15434v1","https://arxiv.org/abs/2511.15165v2","https://arxiv.org/abs/2511.14989v2","https://arxiv.org/abs/2511.14963v1","https://arxiv.org/abs/2511.13808v1","https://arxiv.org/abs/2511.13333v1","https://arxiv.org/abs/2511.12827v1","https://arxiv.org/abs/2511.12743v1","https://arxiv.org/abs/2511.12648v1","https://arxiv.org/abs/2511.12085v1","https://arxiv.org/abs/2511.11979v1","https://arxiv.org/abs/2511.17573v1","https://arxiv.org/abs/2511.11366v1","https://arxiv.org/abs/2511.11759v1","https://arxiv.org/abs/2511.10554v1","https://arxiv.org/abs/2511.09957v1","https://arxiv.org/abs/2511.09606v2","https://arxiv.org/abs/2511.05119v1","https://arxiv.org/abs/2511.04728v1","https://arxiv.org/abs/2511.04472v2","https://arxiv.org/abs/2511.04440v1","https://arxiv.org/abs/2511.01583v1","https://arxiv.org/abs/2511.01180v1","https://arxiv.org/abs/2511.01144v1","https://arxiv.org/abs/2511.00894v1","https://arxiv.org/abs/2511.00361v1","https://arxiv.org/abs/2511.00342v1","https://arxiv.org/abs/2511.00336v1","https://arxiv.org/abs/2510.27298v1","https://arxiv.org/abs/2510.27140v2","https://arxiv.org/abs/2510.25470v1","https://arxiv.org/abs/2510.25806v1","https://arxiv.org/abs/2510.23847v2","https://arxiv.org/abs/2510.23462v1","https://arxiv.org/abs/2510.23313v2","https://arxiv.org/abs/2510.22085v1","https://arxiv.org/abs/2510.21459v1","https://arxiv.org/abs/2510.21004v2","https://arxiv.org/abs/2510.20975v1","https://arxiv.org/abs/2510.20768v1","https://arxiv.org/abs/2510.20367v1","https://arxiv.org/abs/2510.20858v1","https://arxiv.org/abs/2510.20852v1","https://arxiv.org/abs/2510.18585v1","https://arxiv.org/abs/2510.18465v1","https://arxiv.org/abs/2510.18438v2","https://arxiv.org/abs/2510.18324v1","https://arxiv.org/abs/2510.17175v1","https://arxiv.org/abs/2510.16835v1","https://arxiv.org/abs/2510.16251v1","https://arxiv.org/abs/2510.15567v1","https://arxiv.org/abs/2510.14670v1","https://arxiv.org/abs/2510.14638v1","https://arxiv.org/abs/2510.14344v1","https://arxiv.org/abs/2510.14113v1","https://arxiv.org/abs/2510.13925v1","https://arxiv.org/abs/2510.13136v1","https://arxiv.org/abs/2510.12310v1","https://arxiv.org/abs/2510.11974v1","https://arxiv.org/abs/2510.11915v1","https://arxiv.org/abs/2510.15971v1","https://arxiv.org/abs/2510.09984v1","https://arxiv.org/abs/2510.15953v1","https://arxiv.org/abs/2510.08859v1","https://arxiv.org/abs/2510.06607v2","https://arxiv.org/abs/2510.06535v2","https://arxiv.org/abs/2510.05900v1","https://arxiv.org/abs/2510.12811v1","https://arxiv.org/abs/2510.04118v1","https://arxiv.org/abs/2510.03623v1","https://arxiv.org/abs/2510.01676v1","https://arxiv.org/abs/2510.01552v1","https://arxiv.org/abs/2510.02391v1","https://arxiv.org/abs/2510.00240v2","https://arxiv.org/abs/2509.25410v1","https://arxiv.org/abs/2509.23970v1","https://arxiv.org/abs/2509.23621v1","https://arxiv.org/abs/2509.23573v2","https://arxiv.org/abs/2509.23571v2","https://arxiv.org/abs/2509.23449v1","https://arxiv.org/abs/2509.22762v1","https://arxiv.org/abs/2509.22280v1","https://arxiv.org/abs/2510.03254v1","https://arxiv.org/abs/2509.21821v1","https://arxiv.org/abs/2509.21772v1","https://arxiv.org/abs/2509.21129v1","https://arxiv.org/abs/2509.20972v1","https://arxiv.org/abs/2509.20943v1","https://arxiv.org/abs/2509.20639v2","https://arxiv.org/abs/2509.20592v1","https://arxiv.org/abs/2509.20589v1","https://arxiv.org/abs/2509.20166v2","https://arxiv.org/abs/2509.20411v2","https://arxiv.org/abs/2509.19650v1","https://arxiv.org/abs/2509.20399v2","https://arxiv.org/abs/2509.16671v1","https://arxiv.org/abs/2509.16340v1","https://arxiv.org/abs/2509.15756v1","https://arxiv.org/abs/2509.15555v1","https://arxiv.org/abs/2509.15499v1","https://arxiv.org/abs/2509.14519v1","https://arxiv.org/abs/2509.14335v1","https://arxiv.org/abs/2510.09618v1","https://arxiv.org/abs/2509.13186v1","https://arxiv.org/abs/2509.13035v1","https://arxiv.org/abs/2509.11836v1","https://arxiv.org/abs/2509.11615v1","https://arxiv.org/abs/2509.11187v1","https://arxiv.org/abs/2509.10858v2","https://arxiv.org/abs/2509.10838v1","https://arxiv.org/abs/2509.10709v1","https://arxiv.org/abs/2509.10224v1","https://arxiv.org/abs/2509.10206v1","https://arxiv.org/abs/2509.09592v1","https://arxiv.org/abs/2509.09222v1","https://arxiv.org/abs/2509.08493v1","https://arxiv.org/abs/2509.08424v1","https://arxiv.org/abs/2509.08375v1","https://arxiv.org/abs/2509.07457v1","https://arxiv.org/abs/2509.07287v1","https://arxiv.org/abs/2509.06921v1","https://arxiv.org/abs/2509.06548v2","https://arxiv.org/abs/2509.05608v1","https://arxiv.org/abs/2509.04091v2","https://arxiv.org/abs/2509.05370v1","https://arxiv.org/abs/2509.03860v1","https://arxiv.org/abs/2509.03807v1","https://arxiv.org/abs/2509.05362v3","https://arxiv.org/abs/2509.03442v2","https://arxiv.org/abs/2509.22663v1","https://arxiv.org/abs/2509.02113v1","https://arxiv.org/abs/2509.02077v2","https://arxiv.org/abs/2509.01791v2","https://arxiv.org/abs/2509.01731v1","https://arxiv.org/abs/2509.01463v1","https://arxiv.org/abs/2509.05331v1","https://arxiv.org/abs/2509.00770v1","https://arxiv.org/abs/2509.00476v1","https://arxiv.org/abs/2508.21457v2","https://arxiv.org/abs/2509.00124v1","https://arxiv.org/abs/2508.21323v2","https://arxiv.org/abs/2509.10482v1","https://arxiv.org/abs/2508.20643v1","https://arxiv.org/abs/2508.20444v1","https://arxiv.org/abs/2508.20212v2","https://arxiv.org/abs/2509.00081v1","https://arxiv.org/abs/2508.19381v1","https://arxiv.org/abs/2508.18839v2","https://arxiv.org/abs/2508.18684v1","https://arxiv.org/abs/2508.17856v1","https://arxiv.org/abs/2509.05306v1","https://arxiv.org/abs/2508.15987v2","https://arxiv.org/abs/2508.14385v1","https://arxiv.org/abs/2508.14261v1","https://arxiv.org/abs/2508.13118v2","https://arxiv.org/abs/2508.12175v1","https://arxiv.org/abs/2508.12107v1","https://arxiv.org/abs/2508.11928v1","https://arxiv.org/abs/2508.10677v1","https://arxiv.org/abs/2508.10652v1","https://arxiv.org/abs/2508.09801v2","https://arxiv.org/abs/2508.09652v1","https://arxiv.org/abs/2508.09765v1","https://arxiv.org/abs/2508.08656v1","https://arxiv.org/abs/2508.10038v1","https://arxiv.org/abs/2508.07094v2","https://arxiv.org/abs/2509.00005v1","https://arxiv.org/abs/2508.06734v1","https://arxiv.org/abs/2508.06643v1","https://arxiv.org/abs/2508.05188v1","https://arxiv.org/abs/2508.04178v1","https://arxiv.org/abs/2508.03882v1","https://arxiv.org/abs/2508.03879v1","https://arxiv.org/abs/2508.03588v1","https://arxiv.org/abs/2508.03342v1","https://arxiv.org/abs/2508.02438v1","https://arxiv.org/abs/2508.02035v1","https://arxiv.org/abs/2508.01422v1","https://arxiv.org/abs/2508.01059v1","https://arxiv.org/abs/2508.00478v1","https://arxiv.org/abs/2508.00293v3","https://arxiv.org/abs/2507.23611v1","https://arxiv.org/abs/2507.22772v1","https://arxiv.org/abs/2507.22231v1","https://arxiv.org/abs/2507.21538v1","https://arxiv.org/abs/2507.20361v1","https://arxiv.org/abs/2507.19976v1","https://arxiv.org/abs/2507.18313v1","https://arxiv.org/abs/2507.17978v2","https://arxiv.org/abs/2507.17691v1","https://arxiv.org/abs/2507.17655v2","https://arxiv.org/abs/2507.17628v1","https://arxiv.org/abs/2507.16996v1","https://arxiv.org/abs/2507.16952v2","https://arxiv.org/abs/2507.16576v1","https://arxiv.org/abs/2507.16291v1","https://arxiv.org/abs/2507.16241v1","https://arxiv.org/abs/2508.00874v1","https://arxiv.org/abs/2507.16040v1","https://arxiv.org/abs/2507.16852v1","https://arxiv.org/abs/2507.15419v1","https://arxiv.org/abs/2507.15393v1","https://arxiv.org/abs/2507.15163v3","https://arxiv.org/abs/2507.14658v1","https://arxiv.org/abs/2507.14324v1","https://arxiv.org/abs/2507.13629v1","https://arxiv.org/abs/2507.13313v1","https://arxiv.org/abs/2507.12185v1","https://arxiv.org/abs/2507.11310v1","https://arxiv.org/abs/2507.10854v1","https://arxiv.org/abs/2507.09762v1","https://arxiv.org/abs/2507.09564v1","https://arxiv.org/abs/2507.09411v2","https://arxiv.org/abs/2507.09133v1","https://arxiv.org/abs/2507.09074v1","https://arxiv.org/abs/2507.09022v1","https://arxiv.org/abs/2507.10591v1","https://arxiv.org/abs/2507.08597v2","https://arxiv.org/abs/2507.07916v1","https://arxiv.org/abs/2507.07406v1","https://arxiv.org/abs/2507.07258v1","https://arxiv.org/abs/2507.07246v1","https://arxiv.org/abs/2507.07244v1","https://arxiv.org/abs/2507.06850v5","https://arxiv.org/abs/2507.06723v1","https://arxiv.org/abs/2507.07143v1","https://arxiv.org/abs/2507.05213v2","https://arxiv.org/abs/2507.04426v1","https://arxiv.org/abs/2507.04372v1","https://arxiv.org/abs/2507.04275v1","https://arxiv.org/abs/2507.06252v1","https://arxiv.org/abs/2507.04055v2","https://arxiv.org/abs/2507.03993v1","https://arxiv.org/abs/2507.02057v1","https://arxiv.org/abs/2507.01768v1","https://arxiv.org/abs/2507.00348v1","https://arxiv.org/abs/2507.00189v1","https://arxiv.org/abs/2506.23909v1","https://arxiv.org/abs/2506.23814v1","https://arxiv.org/abs/2506.23634v1","https://arxiv.org/abs/2507.02959v1","https://arxiv.org/abs/2506.23314v1","https://arxiv.org/abs/2506.22750v1","https://arxiv.org/abs/2506.22706v1","https://arxiv.org/abs/2506.22323v1","https://arxiv.org/abs/2506.21106v1","https://arxiv.org/abs/2506.22515v1","https://arxiv.org/abs/2506.20228v1","https://arxiv.org/abs/2506.20170v1","https://arxiv.org/abs/2506.19899v3","https://arxiv.org/abs/2506.19480v1","https://arxiv.org/abs/2506.17988v1","https://arxiv.org/abs/2506.17162v2","https://arxiv.org/abs/2506.16968v1","https://arxiv.org/abs/2506.16626v1","https://arxiv.org/abs/2506.16224v2","https://arxiv.org/abs/2506.15656v1","https://arxiv.org/abs/2506.17309v1","https://arxiv.org/abs/2506.14337v1","https://arxiv.org/abs/2506.13746v1","https://arxiv.org/abs/2506.13434v1","https://arxiv.org/abs/2506.12113v4","https://arxiv.org/abs/2506.11612v1","https://arxiv.org/abs/2506.11325v2","https://arxiv.org/abs/2506.10645v1","https://arxiv.org/abs/2506.10175v1","https://arxiv.org/abs/2506.09662v1","https://arxiv.org/abs/2506.12088v2","https://arxiv.org/abs/2506.08922v1"],["https://arxiv.org/pdf/2512.10104v1","https://arxiv.org/pdf/2512.09883v1","https://arxiv.org/pdf/2512.09539v1","https://arxiv.org/pdf/2512.07827v1","https://arxiv.org/pdf/2512.07909v1","https://arxiv.org/pdf/2512.06925v1","https://arxiv.org/pdf/2512.05321v1","https://arxiv.org/pdf/2512.05288v1","https://arxiv.org/pdf/2512.02243v1","https://arxiv.org/pdf/2512.01893v1","https://arxiv.org/pdf/2512.01891v1","https://arxiv.org/pdf/2512.01666v1","https://arxiv.org/pdf/2512.01577v1","https://arxiv.org/pdf/2512.01391v1","https://arxiv.org/pdf/2512.03462v1","https://arxiv.org/pdf/2512.00857v1","https://arxiv.org/pdf/2512.00741v1","https://arxiv.org/pdf/2511.23198v2","https://arxiv.org/pdf/2511.23183v1","https://arxiv.org/pdf/2512.09934v1","https://arxiv.org/pdf/2511.22189v1","https://arxiv.org/pdf/2511.22095v1","https://arxiv.org/pdf/2512.07866v1","https://arxiv.org/pdf/2511.21448v1","https://arxiv.org/pdf/2511.20801v1","https://arxiv.org/pdf/2511.20290v1","https://arxiv.org/pdf/2511.20229v1","https://arxiv.org/pdf/2511.21764v1","https://arxiv.org/pdf/2511.19654v1","https://arxiv.org/pdf/2511.19649v1","https://arxiv.org/pdf/2511.17761v1","https://arxiv.org/pdf/2511.15434v1","https://arxiv.org/pdf/2511.15165v2","https://arxiv.org/pdf/2511.14989v2","https://arxiv.org/pdf/2511.14963v1","https://arxiv.org/pdf/2511.13808v1","https://arxiv.org/pdf/2511.13333v1","https://arxiv.org/pdf/2511.12827v1","https://arxiv.org/pdf/2511.12743v1","https://arxiv.org/pdf/2511.12648v1","https://arxiv.org/pdf/2511.12085v1","https://arxiv.org/pdf/2511.11979v1","https://arxiv.org/pdf/2511.17573v1","https://arxiv.org/pdf/2511.11366v1","https://arxiv.org/pdf/2511.11759v1","https://arxiv.org/pdf/2511.10554v1","https://arxiv.org/pdf/2511.09957v1","https://arxiv.org/pdf/2511.09606v2","https://arxiv.org/pdf/2511.05119v1","https://arxiv.org/pdf/2511.04728v1","https://arxiv.org/pdf/2511.04472v2","https://arxiv.org/pdf/2511.04440v1","https://arxiv.org/pdf/2511.01583v1","https://arxiv.org/pdf/2511.01180v1","https://arxiv.org/pdf/2511.01144v1","https://arxiv.org/pdf/2511.00894v1","https://arxiv.org/pdf/2511.00361v1","https://arxiv.org/pdf/2511.00342v1","https://arxiv.org/pdf/2511.00336v1","https://arxiv.org/pdf/2510.27298v1","https://arxiv.org/pdf/2510.27140v2","https://arxiv.org/pdf/2510.25470v1","https://arxiv.org/pdf/2510.25806v1","https://arxiv.org/pdf/2510.23847v2","https://arxiv.org/pdf/2510.23462v1","https://arxiv.org/pdf/2510.23313v2","https://arxiv.org/pdf/2510.22085v1","https://arxiv.org/pdf/2510.21459v1","https://arxiv.org/pdf/2510.21004v2","https://arxiv.org/pdf/2510.20975v1","https://arxiv.org/pdf/2510.20768v1","https://arxiv.org/pdf/2510.20367v1","https://arxiv.org/pdf/2510.20858v1","https://arxiv.org/pdf/2510.20852v1","https://arxiv.org/pdf/2510.18585v1","https://arxiv.org/pdf/2510.18465v1","https://arxiv.org/pdf/2510.18438v2","https://arxiv.org/pdf/2510.18324v1","https://arxiv.org/pdf/2510.17175v1","https://arxiv.org/pdf/2510.16835v1","https://arxiv.org/pdf/2510.16251v1","https://arxiv.org/pdf/2510.15567v1","https://arxiv.org/pdf/2510.14670v1","https://arxiv.org/pdf/2510.14638v1","https://arxiv.org/pdf/2510.14344v1","https://arxiv.org/pdf/2510.14113v1","https://arxiv.org/pdf/2510.13925v1","https://arxiv.org/pdf/2510.13136v1","https://arxiv.org/pdf/2510.12310v1","https://arxiv.org/pdf/2510.11974v1","https://arxiv.org/pdf/2510.11915v1","https://arxiv.org/pdf/2510.15971v1","https://arxiv.org/pdf/2510.09984v1","https://arxiv.org/pdf/2510.15953v1","https://arxiv.org/pdf/2510.08859v1","https://arxiv.org/pdf/2510.06607v2","https://arxiv.org/pdf/2510.06535v2","https://arxiv.org/pdf/2510.05900v1","https://arxiv.org/pdf/2510.12811v1","https://arxiv.org/pdf/2510.04118v1","https://arxiv.org/pdf/2510.03623v1","https://arxiv.org/pdf/2510.01676v1","https://arxiv.org/pdf/2510.01552v1","https://arxiv.org/pdf/2510.02391v1","https://arxiv.org/pdf/2510.00240v2","https://arxiv.org/pdf/2509.25410v1","https://arxiv.org/pdf/2509.23970v1","https://arxiv.org/pdf/2509.23621v1","https://arxiv.org/pdf/2509.23573v2","https://arxiv.org/pdf/2509.23571v2","https://arxiv.org/pdf/2509.23449v1","https://arxiv.org/pdf/2509.22762v1","https://arxiv.org/pdf/2509.22280v1","https://arxiv.org/pdf/2510.03254v1","https://arxiv.org/pdf/2509.21821v1","https://arxiv.org/pdf/2509.21772v1","https://arxiv.org/pdf/2509.21129v1","https://arxiv.org/pdf/2509.20972v1","https://arxiv.org/pdf/2509.20943v1","https://arxiv.org/pdf/2509.20639v2","https://arxiv.org/pdf/2509.20592v1","https://arxiv.org/pdf/2509.20589v1","https://arxiv.org/pdf/2509.20166v2","https://arxiv.org/pdf/2509.20411v2","https://arxiv.org/pdf/2509.19650v1","https://arxiv.org/pdf/2509.20399v2","https://arxiv.org/pdf/2509.16671v1","https://arxiv.org/pdf/2509.16340v1","https://arxiv.org/pdf/2509.15756v1","https://arxiv.org/pdf/2509.15555v1","https://arxiv.org/pdf/2509.15499v1","https://arxiv.org/pdf/2509.14519v1","https://arxiv.org/pdf/2509.14335v1","https://arxiv.org/pdf/2510.09618v1","https://arxiv.org/pdf/2509.13186v1","https://arxiv.org/pdf/2509.13035v1","https://arxiv.org/pdf/2509.11836v1","https://arxiv.org/pdf/2509.11615v1","https://arxiv.org/pdf/2509.11187v1","https://arxiv.org/pdf/2509.10858v2","https://arxiv.org/pdf/2509.10838v1","https://arxiv.org/pdf/2509.10709v1","https://arxiv.org/pdf/2509.10224v1","https://arxiv.org/pdf/2509.10206v1","https://arxiv.org/pdf/2509.09592v1","https://arxiv.org/pdf/2509.09222v1","https://arxiv.org/pdf/2509.08493v1","https://arxiv.org/pdf/2509.08424v1","https://arxiv.org/pdf/2509.08375v1","https://arxiv.org/pdf/2509.07457v1","https://arxiv.org/pdf/2509.07287v1","https://arxiv.org/pdf/2509.06921v1","https://arxiv.org/pdf/2509.06548v2","https://arxiv.org/pdf/2509.05608v1","https://arxiv.org/pdf/2509.04091v2","https://arxiv.org/pdf/2509.05370v1","https://arxiv.org/pdf/2509.03860v1","https://arxiv.org/pdf/2509.03807v1","https://arxiv.org/pdf/2509.05362v3","https://arxiv.org/pdf/2509.03442v2","https://arxiv.org/pdf/2509.22663v1","https://arxiv.org/pdf/2509.02113v1","https://arxiv.org/pdf/2509.02077v2","https://arxiv.org/pdf/2509.01791v2","https://arxiv.org/pdf/2509.01731v1","https://arxiv.org/pdf/2509.01463v1","https://arxiv.org/pdf/2509.05331v1","https://arxiv.org/pdf/2509.00770v1","https://arxiv.org/pdf/2509.00476v1","https://arxiv.org/pdf/2508.21457v2","https://arxiv.org/pdf/2509.00124v1","https://arxiv.org/pdf/2508.21323v2","https://arxiv.org/pdf/2509.10482v1","https://arxiv.org/pdf/2508.20643v1","https://arxiv.org/pdf/2508.20444v1","https://arxiv.org/pdf/2508.20212v2","https://arxiv.org/pdf/2509.00081v1","https://arxiv.org/pdf/2508.19381v1","https://arxiv.org/pdf/2508.18839v2","https://arxiv.org/pdf/2508.18684v1","https://arxiv.org/pdf/2508.17856v1","https://arxiv.org/pdf/2509.05306v1","https://arxiv.org/pdf/2508.15987v2","https://arxiv.org/pdf/2508.14385v1","https://arxiv.org/pdf/2508.14261v1","https://arxiv.org/pdf/2508.13118v2","https://arxiv.org/pdf/2508.12175v1","https://arxiv.org/pdf/2508.12107v1","https://arxiv.org/pdf/2508.11928v1","https://arxiv.org/pdf/2508.10677v1","https://arxiv.org/pdf/2508.10652v1","https://arxiv.org/pdf/2508.09801v2","https://arxiv.org/pdf/2508.09652v1","https://arxiv.org/pdf/2508.09765v1","https://arxiv.org/pdf/2508.08656v1","https://arxiv.org/pdf/2508.10038v1","https://arxiv.org/pdf/2508.07094v2","https://arxiv.org/pdf/2509.00005v1","https://arxiv.org/pdf/2508.06734v1","https://arxiv.org/pdf/2508.06643v1","https://arxiv.org/pdf/2508.05188v1","https://arxiv.org/pdf/2508.04178v1","https://arxiv.org/pdf/2508.03882v1","https://arxiv.org/pdf/2508.03879v1","https://arxiv.org/pdf/2508.03588v1","https://arxiv.org/pdf/2508.03342v1","https://arxiv.org/pdf/2508.02438v1","https://arxiv.org/pdf/2508.02035v1","https://arxiv.org/pdf/2508.01422v1","https://arxiv.org/pdf/2508.01059v1","https://arxiv.org/pdf/2508.00478v1","https://arxiv.org/pdf/2508.00293v3","https://arxiv.org/pdf/2507.23611v1","https://arxiv.org/pdf/2507.22772v1","https://arxiv.org/pdf/2507.22231v1","https://arxiv.org/pdf/2507.21538v1","https://arxiv.org/pdf/2507.20361v1","https://arxiv.org/pdf/2507.19976v1","https://arxiv.org/pdf/2507.18313v1","https://arxiv.org/pdf/2507.17978v2","https://arxiv.org/pdf/2507.17691v1","https://arxiv.org/pdf/2507.17655v2","https://arxiv.org/pdf/2507.17628v1","https://arxiv.org/pdf/2507.16996v1","https://arxiv.org/pdf/2507.16952v2","https://arxiv.org/pdf/2507.16576v1","https://arxiv.org/pdf/2507.16291v1","https://arxiv.org/pdf/2507.16241v1","https://arxiv.org/pdf/2508.00874v1","https://arxiv.org/pdf/2507.16040v1","https://arxiv.org/pdf/2507.16852v1","https://arxiv.org/pdf/2507.15419v1","https://arxiv.org/pdf/2507.15393v1","https://arxiv.org/pdf/2507.15163v3","https://arxiv.org/pdf/2507.14658v1","https://arxiv.org/pdf/2507.14324v1","https://arxiv.org/pdf/2507.13629v1","https://arxiv.org/pdf/2507.13313v1","https://arxiv.org/pdf/2507.12185v1","https://arxiv.org/pdf/2507.11310v1","https://arxiv.org/pdf/2507.10854v1","https://arxiv.org/pdf/2507.09762v1","https://arxiv.org/pdf/2507.09564v1","https://arxiv.org/pdf/2507.09411v2","https://arxiv.org/pdf/2507.09133v1","https://arxiv.org/pdf/2507.09074v1","https://arxiv.org/pdf/2507.09022v1","https://arxiv.org/pdf/2507.10591v1","https://arxiv.org/pdf/2507.08597v2","https://arxiv.org/pdf/2507.07916v1","https://arxiv.org/pdf/2507.07406v1","https://arxiv.org/pdf/2507.07258v1","https://arxiv.org/pdf/2507.07246v1","https://arxiv.org/pdf/2507.07244v1","https://arxiv.org/pdf/2507.06850v5","https://arxiv.org/pdf/2507.06723v1","https://arxiv.org/pdf/2507.07143v1","https://arxiv.org/pdf/2507.05213v2","https://arxiv.org/pdf/2507.04426v1","https://arxiv.org/pdf/2507.04372v1","https://arxiv.org/pdf/2507.04275v1","https://arxiv.org/pdf/2507.06252v1","https://arxiv.org/pdf/2507.04055v2","https://arxiv.org/pdf/2507.03993v1","https://arxiv.org/pdf/2507.02057v1","https://arxiv.org/pdf/2507.01768v1","https://arxiv.org/pdf/2507.00348v1","https://arxiv.org/pdf/2507.00189v1","https://arxiv.org/pdf/2506.23909v1","https://arxiv.org/pdf/2506.23814v1","https://arxiv.org/pdf/2506.23634v1","https://arxiv.org/pdf/2507.02959v1","https://arxiv.org/pdf/2506.23314v1","https://arxiv.org/pdf/2506.22750v1","https://arxiv.org/pdf/2506.22706v1","https://arxiv.org/pdf/2506.22323v1","https://arxiv.org/pdf/2506.21106v1","https://arxiv.org/pdf/2506.22515v1","https://arxiv.org/pdf/2506.20228v1","https://arxiv.org/pdf/2506.20170v1","https://arxiv.org/pdf/2506.19899v3","https://arxiv.org/pdf/2506.19480v1","https://arxiv.org/pdf/2506.17988v1","https://arxiv.org/pdf/2506.17162v2","https://arxiv.org/pdf/2506.16968v1","https://arxiv.org/pdf/2506.16626v1","https://arxiv.org/pdf/2506.16224v2","https://arxiv.org/pdf/2506.15656v1","https://arxiv.org/pdf/2506.17309v1","https://arxiv.org/pdf/2506.14337v1","https://arxiv.org/pdf/2506.13746v1","https://arxiv.org/pdf/2506.13434v1","https://arxiv.org/pdf/2506.12113v4","https://arxiv.org/pdf/2506.11612v1","https://arxiv.org/pdf/2506.11325v2","https://arxiv.org/pdf/2506.10645v1","https://arxiv.org/pdf/2506.10175v1","https://arxiv.org/pdf/2506.09662v1","https://arxiv.org/pdf/2506.12088v2","https://arxiv.org/pdf/2506.08922v1"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>published<\/th>\n      <th>arxiv_id<\/th>\n      <th>primary_category<\/th>\n      <th>topic_labels<\/th>\n      <th>title<\/th>\n      <th>link_abs<\/th>\n      <th>link_pdf<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"autoWidth":true,"scrollX":true,"columnDefs":[{"name":"published","targets":0},{"name":"arxiv_id","targets":1},{"name":"primary_category","targets":2},{"name":"topic_labels","targets":3},{"name":"title","targets":4},{"name":"link_abs","targets":5},{"name":"link_pdf","targets":6}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="методика" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="методика"><span class="header-section-number">5</span> Методика</h2>
+<p>Данный отчёт формируется <strong>воспроизводимо</strong> и включает полный аналитический конвейер:</p>
+<ol type="1">
+<li>Получение данных из arXiv API (<code>arxiv_update</code>)</li>
+<li>Кэширование и обновление локального набора данных</li>
+<li>Правил-ориентированную тематическую разметку (<code>ti_tag</code>)</li>
+<li>Формирование агрегированных показателей и трендов</li>
+<li>Визуальное представление результатов</li>
+</ol>
+<p>Словарь тематик хранится в репозитории проекта и версионируется.</p>
+</section>
+<section id="как-использовать" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="как-использовать"><span class="header-section-number">6</span> Как использовать</h2>
+<ul>
+<li>Render в RStudio: открыть <code>dashboard.qmd</code> → Render</li>
+<li>Из консоли:</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>quarto<span class="sc">::</span><span class="fu">quarto_render</span>(<span class="st">"quarto/dashboard.qmd"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Результат: HTML-отчёт, пригодный для демонстрации и включения в Docker-образ.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

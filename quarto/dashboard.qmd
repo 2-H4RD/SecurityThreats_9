@@ -1,0 +1,160 @@
+---
+title: "arxivThreatIntel: Threat Intelligence Dashboard"
+subtitle: "Аналитика научных публикаций arXiv по тематике ИБ"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    theme: cosmo
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+# --- Initialization ---------------------------------------------------------
+
+# Load package functions from the current repo (dev-mode)
+if (requireNamespace("devtools", quietly = TRUE)) {
+  devtools::load_all("..")
+} else {
+  library(arxivThreatIntel)
+}
+
+library(dplyr)
+library(stringr)
+library(ggplot2)
+
+# Search query (single source of truth for reproducibility)
+query <- 'cat:cs.CR AND (malware OR phishing OR "threat intelligence" OR "incident response")'
+
+# --- ETL --------------------------------------------------------------------
+
+upd <- arxiv_update(
+  search_query = query,
+  max_results = 300,
+  timeout_sec = 90
+)
+
+tagged <- ti_tag(upd$records)
+
+freq <- ti_topic_freq(tagged)
+trend <- ti_topic_trend_weekly(tagged)
+```
+
+## Общая информация
+
+```{r}
+total_records <- nrow(tagged)
+tagged_records <- sum(tagged$hit_count > 0, na.rm = TRUE)
+
+summary_tbl <- tibble::tibble(
+  Показатель = c(
+    "Всего загружено публикаций",
+    "Публикаций с тематическими совпадениями",
+    "Файл локального кэша (CSV)",
+    "Файл метаданных обновления"
+  ),
+  Значение = c(
+    total_records,
+    tagged_records,
+    upd$csv_path,
+    upd$meta_path
+  )
+)
+
+summary_tbl
+```
+
+## Частоты тематик (rule-based)
+
+```{r}
+top_n <- 10
+freq_top <- head(freq, top_n)
+
+ggplot(freq_top, aes(x = reorder(topic, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = paste0("Топ-", top_n, " тематик информационной безопасности"),
+    x = "Тематика",
+    y = "Количество публикаций"
+  )
+```
+
+## Динамика публикаций по времени
+
+```{r}
+top_topics <- head(freq$topic, 6)
+
+trend_filtered <- trend |>
+  filter(topic %in% top_topics)
+
+ggplot(trend_filtered, aes(x = week, y = n, color = topic)) +
+  geom_line(linewidth = 1) +
+  labs(
+    title = "Недельная динамика публикаций по ключевым темам",
+    x = "Неделя",
+    y = "Количество публикаций",
+    color = "Тема"
+  )
+```
+
+## Таблица публикаций
+
+```{r}
+tbl <- tagged |>
+  mutate(
+    published = as.Date(published),
+    title = str_trunc(title, 150),
+    summary = str_trunc(summary, 250)
+  ) |>
+  select(
+    published,
+    arxiv_id,
+    primary_category,
+    topic_labels,
+    title,
+    link_abs,
+    link_pdf
+  )
+
+if (requireNamespace("DT", quietly = TRUE)) {
+  DT::datatable(
+    tbl,
+    options = list(
+      pageLength = 10,
+      autoWidth = TRUE,
+      scrollX = TRUE
+    ),
+    rownames = FALSE
+  )
+} else {
+  tbl
+}
+```
+
+## Методика
+
+Данный отчёт формируется **воспроизводимо** и включает полный аналитический конвейер:
+
+1. Получение данных из arXiv API (`arxiv_update`)
+2. Кэширование и обновление локального набора данных
+3. Правил-ориентированную тематическую разметку (`ti_tag`)
+4. Формирование агрегированных показателей и трендов
+5. Визуальное представление результатов
+
+Словарь тематик хранится в репозитории проекта и версионируется.
+
+## Как использовать
+
+- Render в RStudio: открыть `dashboard.qmd` → Render
+- Из консоли:
+
+```r
+quarto::quarto_render("quarto/dashboard.qmd")
+```
+
+Результат: HTML-отчёт, пригодный для демонстрации и включения в Docker-образ.
