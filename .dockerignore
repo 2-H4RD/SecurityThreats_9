@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.RDS
+*.Rproj
+.git
+.gitignore
+renv
+renv.lock
+**/.DS_Store
+quarto/_cache
+quarto/_freeze
