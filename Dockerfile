@@ -30,7 +30,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 # Install your local R package
-RUN R CMD INSTALL .
+# Diagnostics: confirm package sources are present in build context
+RUN ls -la /app && \
+    echo "---- DESCRIPTION ----" && \
+    (test -f DESCRIPTION && sed -n '1,200p' DESCRIPTION || (echo "DESCRIPTION missing" && exit 1)) && \
+    echo "---- R/ directory ----" && \
+    (test -d R && ls -la R || (echo "R/ directory missing" && exit 1))
+
+# Install local package with verbose output (so CI logs show the real error)
+RUN R CMD INSTALL . --preclean --no-multiarch --no-byte-compile --verbose
+
 
 RUN mkdir -p /srv
 EXPOSE 8080
