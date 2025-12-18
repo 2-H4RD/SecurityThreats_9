@@ -17,12 +17,7 @@ execute:
 # --- Initialization ---------------------------------------------------------
 
 # Load package functions from the current repo (dev-mode)
-if (requireNamespace("devtools", quietly = TRUE)) {
-  devtools::load_all("..")
-} else {
-  library(arxivThreatIntel)
-}
-
+library(arxivThreatIntel)
 library(dplyr)
 library(stringr)
 library(ggplot2)

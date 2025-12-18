@@ -7,14 +7,23 @@
 #' @return Character scalar path.
 #' @keywords internal
 arxiv_data_dir <- function() {
-  if (exists("R_user_dir", asNamespace("tools"), inherits = FALSE)) {
-    base <- tools::R_user_dir("arxivThreatIntel", which = "data")
-  } else {
-    base <- file.path(tempdir(), "arxivThreatIntel-data")
+  base <- NULL
+
+  # Prefer per-user writable directory (R >= 4.0), but guard against odd returns
+  base <- tryCatch(
+    tools::R_user_dir("arxivThreatIntel", which = "data"),
+    error = function(e) NULL
+  )
+
+  # Normalize: must be a single, non-empty character scalar
+  if (is.null(base) || !is.character(base) || length(base) != 1L || is.na(base) || !nzchar(base)) {
+    base <- file.path(path.expand("~"), ".arxivThreatIntel-data")
   }
+
   if (!dir.exists(base)) dir.create(base, recursive = TRUE, showWarnings = FALSE)
   base
 }
+
 
 #' Save arXiv records to CSV
 #'
@@ -29,9 +38,12 @@ arxiv_save_csv <- function(x, path = NULL) {
   if (is.null(path)) {
     path <- file.path(arxiv_data_dir(), "arxiv_records.csv")
   }
+  if (!is.character(path) || length(path) != 1L || is.na(path)) {
+    stop("csv path must be a single character string.", call. = FALSE)
+  }
+
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
 
-  # Convert list-columns to delimited strings for CSV portability
   x2 <- x
   if ("authors" %in% names(x2)) {
     x2$authors <- vapply(x2$authors, function(v) paste(v, collapse = "; "), character(1))
@@ -54,13 +66,16 @@ arxiv_load_csv <- function(path = NULL) {
   if (is.null(path)) {
     path <- file.path(arxiv_data_dir(), "arxiv_records.csv")
   }
+  if (!is.character(path) || length(path) != 1L || is.na(path)) {
+    stop("csv path must be a single character string.", call. = FALSE)
+  }
+
   if (!file.exists(path)) {
     return(tibble::tibble())
   }
 
   x <- readr::read_csv(path, show_col_types = FALSE)
 
-  # Restore list-columns if present (best-effort)
   if ("authors" %in% names(x)) {
     x$authors <- lapply(x$authors, function(s) {
       if (is.na(s) || !nzchar(s)) character() else stringr::str_split(s, "\\s*;\\s*")[[1]]
