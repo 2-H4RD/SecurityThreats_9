@@ -1,50 +1,51 @@
-FROM rocker/r2u:jammy
+# Dockerfile для arxivThreatIntel с Shiny GUI
+FROM rocker/r-ver:4.3.2
 
-ARG QUARTO_VERSION=1.5.57
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libfontconfig1-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    pandoc \
+    && rm -rf /var/lib/apt/lists/*
 
-# System deps + Quarto
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates git python3 \
-    libcurl4-openssl-dev libssl-dev libxml2-dev \
- && rm -rf /var/lib/apt/lists/*
+# Установка R пакетов
+RUN R -e "install.packages(c( \
+    'shiny', \
+    'bslib', \
+    'DT', \
+    'dplyr', \
+    'ggplot2', \
+    'shinycssloaders', \
+    'httr2', \
+    'xml2', \
+    'readr', \
+    'stringr', \
+    'tibble', \
+    'lubridate', \
+    'tidyr', \
+    'devtools', \
+    'testthat' \
+    ), repos='https://cloud.r-project.org/')"
 
-RUN curl -L -o /tmp/quarto.deb \
-      https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb \
- && dpkg -i /tmp/quarto.deb \
- && rm -f /tmp/quarto.deb
-
+# Создание рабочей директории
 WORKDIR /app
-COPY . /app
 
-# Install R deps as Ubuntu binaries (fast + stable in CI)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    r-cran-dplyr \
-    r-cran-tibble \
-    r-cran-stringr \
-    r-cran-lubridate \
-    r-cran-httr2 \
-    r-cran-xml2 \
-    r-cran-ggplot2 \
-    r-cran-readr \
-    r-cran-dt \
-    r-cran-tidyr \
- && rm -rf /var/lib/apt/lists/*
+# Копирование всего проекта
+COPY . /app/
 
+# Установка пакета
+RUN R CMD INSTALL . --preclean
 
-# Install your local R package
-# Diagnostics: confirm package sources are present in build context
-RUN ls -la /app && \
-    echo "---- DESCRIPTION ----" && \
-    (test -f DESCRIPTION && sed -n '1,200p' DESCRIPTION || (echo "DESCRIPTION missing" && exit 1)) && \
-    echo "---- R/ directory ----" && \
-    (test -d R && ls -la R || (echo "R/ directory missing" && exit 1))
-
-# Install local package with verbose output (so CI logs show the real error)
-RUN R CMD INSTALL . --preclean --no-multiarch --no-byte-compile
-
-
-RUN mkdir -p /srv
+# Открытие порта для Shiny
 EXPOSE 8080
 
-# Render and serve
-CMD ["bash", "-lc", "quarto render quarto/dashboard.qmd --to html --output-dir /srv && python3 -m http.server 8080 --directory /srv"]
+# Команда запуска Shiny приложения
+CMD ["R", "-e", "arxivThreatIntel::run_app(host='0.0.0.0', port=8080, launch_browser=FALSE)"]

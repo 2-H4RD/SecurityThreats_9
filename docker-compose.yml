@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  arxiv-threat-intel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arxiv-threat-intel-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data-cache:/root/.local/share/R/data/R/arxivThreatIntel
+    environment:
+      TZ: UTC
+    restart: unless-stopped
